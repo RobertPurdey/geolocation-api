@@ -4,9 +4,6 @@ module GeolocationServices
       @provider = provider
     end
 
-    def call(target)
-      @provider.call(target)
-    end
+    delegate :call, to: :@provider
   end
 end
-

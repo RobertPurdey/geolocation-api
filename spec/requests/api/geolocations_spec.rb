@@ -1,43 +1,43 @@
 require 'rails_helper'
 
-RSpec.describe "Geolocations API", type: :request do
-  shared_examples "an invalid target" do
-    it "returns a bad request" do
+RSpec.describe 'Geolocations API', type: :request do
+  shared_examples 'an invalid target' do
+    it 'returns a bad request' do
       request
-  
+
       expect(response).to have_http_status(:bad_request)
 
       json = JSON.parse(response.body)
-      expect(json["error"]).to eq("Target must be a valid IP address or URL")
+      expect(json['error']).to eq('Target must be a valid IP address or URL')
     end
   end
 
-  describe "Create a geolocation" do
+  describe 'Create a geolocation' do
     let(:finder) { instance_double(GeolocationServices::Finder) }
 
     before do
       allow(GeolocationServices::Finder).to receive(:new).and_return(finder)
     end
 
-    context "when the target is provided" do
+    context 'when the target is provided' do
       let(:geolocation) do
         {
-          "ip" => "208.80.152.2",
-          "country" => "Canada",
-          "region" => "British Columbia",
-          "city" => "Vancouver",
-          "latitude" => 49.28,
-          "longitude" => -123.12
+          'ip' => '208.80.152.2',
+          'country' => 'Canada',
+          'region' => 'British Columbia',
+          'city' => 'Vancouver',
+          'latitude' => 49.28,
+          'longitude' => -123.12
         }
-      end 
-
-      before do
-        allow(finder).to receive(:call).with("208.80.152.2").and_return(geolocation)
       end
 
-      it "creates a geolocation based on the target" do
-        post api_geolocations_path, params: { target: "208.80.152.2"}
-  
+      before do
+        allow(finder).to receive(:call).with('208.80.152.2').and_return(geolocation)
+      end
+
+      it 'creates a geolocation based on the target' do
+        post api_geolocations_path, params: { target: '208.80.152.2' }
+
         expect(response).to have_http_status(:created)
 
         json = JSON.parse(response.body)
@@ -45,212 +45,212 @@ RSpec.describe "Geolocations API", type: :request do
       end
     end
 
-    context "when the target is a URL" do
+    context 'when the target is a URL' do
       let(:geolocation) do
         {
-          "ip" => "142.250.72.196",
-          "country" => "United States",
-          "region" => "California",
-          "city" => "Mountain View",
-          "latitude" => 37.4056,
-          "longitude" => -122.0775
+          'ip' => '142.250.72.196',
+          'country' => 'United States',
+          'region' => 'California',
+          'city' => 'Mountain View',
+          'latitude' => 37.4056,
+          'longitude' => -122.0775
         }
       end
-    
+
       before do
-        allow(Resolv).to receive(:getaddress).with("www.google.com").and_return("142.250.72.196")
-        allow(finder).to receive(:call).with("142.250.72.196").and_return(geolocation)
+        allow(Resolv).to receive(:getaddress).with('www.google.com').and_return('142.250.72.196')
+        allow(finder).to receive(:call).with('142.250.72.196').and_return(geolocation)
       end
-    
-      it "creates a geolocation based on the URL" do
-        post api_geolocations_path, params: { target: "https://www.google.com" }
-    
+
+      it 'creates a geolocation based on the URL' do
+        post api_geolocations_path, params: { target: 'https://www.google.com' }
+
         expect(response).to have_http_status(:created)
-    
+
         json = JSON.parse(response.body)
         expect(json).to include(geolocation)
       end
     end
 
-    context "when the target is omitted" do
-      it "returns a bad request error" do
+    context 'when the target is omitted' do
+      it 'returns a bad request error' do
         post api_geolocations_path
 
         expect(response).to have_http_status(:bad_request)
       end
     end
 
-    context "when the geolocation already exists" do
+    context 'when the geolocation already exists' do
       before do
         Geolocation.create!(
-          ip: "208.80.152.2",
-          country: "Canada",
-          region: "British Columbia",
-          city: "Vancouver",
+          ip: '208.80.152.2',
+          country: 'Canada',
+          region: 'British Columbia',
+          city: 'Vancouver',
           latitude: 49.28,
           longitude: -123.12
         )
         allow(finder).to receive(:call)
       end
-    
-      it "returns a conflict error" do
-        post api_geolocations_path, params: { target: "208.80.152.2" }
-    
+
+      it 'returns a conflict error' do
+        post api_geolocations_path, params: { target: '208.80.152.2' }
+
         expect(response).to have_http_status(:conflict)
 
         json = JSON.parse(response.body)
-        expect(json["error"]).to eq(
-          "Geolocation with the ip: 208.80.152.2 already exists"
+        expect(json['error']).to eq(
+          'Geolocation with the ip: 208.80.152.2 already exists'
         )
       end
-    
-      it "ignores calling the finder" do
-        post api_geolocations_path, params: { target: "208.80.152.2" }
-    
+
+      it 'ignores calling the finder' do
+        post api_geolocations_path, params: { target: '208.80.152.2' }
+
         expect(finder).not_to have_received(:call)
       end
     end
 
-    context "when the target is an invalid IP address" do
+    context 'when the target is an invalid IP address' do
       let(:request) do
-        post api_geolocations_path, params: { target: "208.80.152.999" }
+        post api_geolocations_path, params: { target: '208.80.152.999' }
       end
-  
-      include_examples "an invalid target"
+
+      include_examples 'an invalid target'
     end
-  
-    context "when the target is an invalid URL" do
+
+    context 'when the target is an invalid URL' do
       let(:request) do
-        post api_geolocations_path, params: { target: "https://[" }
+        post api_geolocations_path, params: { target: 'https://[' }
       end
-  
-      include_examples "an invalid target"
+
+      include_examples 'an invalid target'
     end
   end
 
-  describe "Show a geolocation" do
-    context "when the geolocation exists" do
+  describe 'Show a geolocation' do
+    context 'when the geolocation exists' do
       let(:geolocation) do
         {
-          "ip" => "208.80.152.2",
-          "country" => "Canada",
-          "region" => "British Columbia",
-          "city" => "Vancouver",
-          "latitude" => 49.28,
-          "longitude" => -123.12
+          'ip' => '208.80.152.2',
+          'country' => 'Canada',
+          'region' => 'British Columbia',
+          'city' => 'Vancouver',
+          'latitude' => 49.28,
+          'longitude' => -123.12
         }
       end
-  
+
       let!(:geolocation_record) do
         Geolocation.create!(geolocation)
       end
 
-      context "when the target is an IP address" do
-        it "returns the geolocation" do
-          get api_geolocations_path, params: { target: "208.80.152.2" }
-  
+      context 'when the target is an IP address' do
+        it 'returns the geolocation' do
+          get api_geolocations_path, params: { target: '208.80.152.2' }
+
           expect(response).to have_http_status(:ok)
-  
+
           json = JSON.parse(response.body)
           expect(json).to include(geolocation)
         end
       end
-  
-      context "when the target is a URL" do
+
+      context 'when the target is a URL' do
         before do
-          allow(Resolv).to receive(:getaddress).with("www.google.com").and_return("208.80.152.2")
+          allow(Resolv).to receive(:getaddress).with('www.google.com').and_return('208.80.152.2')
         end
-  
-        it "returns the geolocation" do
-          get api_geolocations_path, params: { target: "https://www.google.com" }
-  
+
+        it 'returns the geolocation' do
+          get api_geolocations_path, params: { target: 'https://www.google.com' }
+
           expect(response).to have_http_status(:ok)
-  
+
           json = JSON.parse(response.body)
           expect(json).to include(geolocation)
         end
       end
     end
 
-    context "when the geolocation is missing" do
-      it "returns not found" do
-        get api_geolocations_path, params: { target: "208.80.152.2"}
+    context 'when the geolocation is missing' do
+      it 'returns not found' do
+        get api_geolocations_path, params: { target: '208.80.152.2' }
 
         expect(response).to have_http_status(:not_found)
 
         json = JSON.parse(response.body)
-        expect(json["error"]).to eq(
-          "Geolocation with the ip: 208.80.152.2 was not found"
+        expect(json['error']).to eq(
+          'Geolocation with the ip: 208.80.152.2 was not found'
         )
       end
     end
 
-    context "when the target is an invalid IP address" do
+    context 'when the target is an invalid IP address' do
       let(:request) do
-        get api_geolocations_path, params: { target: "208.80.152.999" }
+        get api_geolocations_path, params: { target: '208.80.152.999' }
       end
-  
-      include_examples "an invalid target"
+
+      include_examples 'an invalid target'
     end
-  
-    context "when the target is an invalid URL" do
+
+    context 'when the target is an invalid URL' do
       let(:request) do
-        get api_geolocations_path, params: { target: "https://[" }
+        get api_geolocations_path, params: { target: 'https://[' }
       end
-  
-      include_examples "an invalid target"
+
+      include_examples 'an invalid target'
     end
   end
 
-  describe "Destroy a geolocation" do
-    context "when the geolocation exists" do
+  describe 'Destroy a geolocation' do
+    context 'when the geolocation exists' do
       let!(:geolocation) do
         Geolocation.create!(
-          ip: "208.80.152.2",
-          country: "Canada",
-          region: "British Columbia",
-          city: "Vancouver",
+          ip: '208.80.152.2',
+          country: 'Canada',
+          region: 'British Columbia',
+          city: 'Vancouver',
           latitude: 49.28,
           longitude: -123.12
         )
       end
 
-      it "destroys the geolocation" do
-        delete api_geolocations_path, params: { target: "208.80.152.2"}
+      it 'destroys the geolocation' do
+        delete api_geolocations_path, params: { target: '208.80.152.2' }
         expect(response).to have_http_status(:no_content)
 
-        delete api_geolocations_path, params: { target: "208.80.152.2"}
+        delete api_geolocations_path, params: { target: '208.80.152.2' }
         expect(response).to have_http_status(:not_found)
       end
     end
 
-    context "when the geolocation is missing" do
-      it "returns not found" do
-        delete api_geolocations_path, params: { target: "208.80.152.2"}
+    context 'when the geolocation is missing' do
+      it 'returns not found' do
+        delete api_geolocations_path, params: { target: '208.80.152.2' }
 
         expect(response).to have_http_status(:not_found)
 
         json = JSON.parse(response.body)
-        expect(json["error"]).to eq(
-          "Geolocation with the ip: 208.80.152.2 was not found"
+        expect(json['error']).to eq(
+          'Geolocation with the ip: 208.80.152.2 was not found'
         )
       end
     end
 
-    context "when the target is an invalid IP address" do
+    context 'when the target is an invalid IP address' do
       let(:request) do
-        delete api_geolocations_path, params: { target: "208.80.152.999" }
+        delete api_geolocations_path, params: { target: '208.80.152.999' }
       end
-  
-      include_examples "an invalid target"
+
+      include_examples 'an invalid target'
     end
-  
-    context "when the target is an invalid URL" do
+
+    context 'when the target is an invalid URL' do
       let(:request) do
-        delete api_geolocations_path, params: { target: "https://[" }
+        delete api_geolocations_path, params: { target: 'https://[' }
       end
-  
-      include_examples "an invalid target"
+
+      include_examples 'an invalid target'
     end
   end
 end

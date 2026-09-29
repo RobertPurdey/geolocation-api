@@ -1,12 +1,12 @@
-require "net/http"
-require "json"
+require 'net/http'
+require 'json'
 
 module GeolocationServices
   module Providers
     class IpstackProvider
-      BASE_URL = "https://api.ipstack.com"
+      BASE_URL = 'https://api.ipstack.com'
 
-      def initialize(access_key: ENV.fetch("IPSTACK_ACCESS_KEY"))
+      def initialize(access_key: ENV.fetch('IPSTACK_ACCESS_KEY'))
         @access_key = access_key
       end
 
@@ -18,18 +18,18 @@ module GeolocationServices
         data = JSON.parse(response.body)
 
         {
-          ip: data["ip"],
-          country: data["country_name"],
-          region: data["region_name"],
-          city: data["city"],
-          latitude: data["latitude"],
-          longitude: data["longitude"]
+          ip: data['ip'],
+          country: data['country_name'],
+          region: data['region_name'],
+          city: data['city'],
+          latitude: data['latitude'],
+          longitude: data['longitude']
         }
       end
 
       private
 
-      def request (target)
+      def request(target)
         uri = URI("#{BASE_URL}/#{target}")
         uri.query = URI.encode_www_form(access_key: @access_key)
 
