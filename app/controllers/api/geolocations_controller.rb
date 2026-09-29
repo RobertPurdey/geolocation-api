@@ -1,7 +1,7 @@
 module Api
   class GeolocationsController < ApplicationController
     before_action :ensure_unique_geolocation, only: :create
-    before_action :set_geolocation, only: :show
+    before_action :set_geolocation, only: [:show, :destroy]
 
     def create
       target = geolocation_params
@@ -13,6 +13,11 @@ module Api
 
     def show
       render json: @found_geolocation, status: :ok
+    end
+
+    def destroy
+      @found_geolocation.destroy!
+      head :no_content
     end
 
     private

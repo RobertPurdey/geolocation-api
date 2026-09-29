@@ -117,4 +117,40 @@ RSpec.describe "Geolocations API", type: :request do
       end
     end
   end
+
+  describe "Destroy a geolocation" do
+    context "when the geolocation exists" do
+      let!(:geolocation) do
+        Geolocation.create!(
+          ip: "208.80.152.2",
+          country: "Canada",
+          region: "British Columbia",
+          city: "Vancouver",
+          latitude: 49.28,
+          longitude: -123.12
+        )
+      end
+
+      it "destroys the geolocation" do
+        delete api_geolocation_path("208.80.152.2")
+        expect(response).to have_http_status(:no_content)
+
+        delete api_geolocation_path("208.80.152.2")
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when the geolocation is missing" do
+      it "returns not found" do
+        delete api_geolocation_path("208.80.152.2")
+
+        expect(response).to have_http_status(:not_found)
+
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq(
+          "Geolocation with the ip: 208.80.152.2 was not found"
+        )
+      end
+    end
+  end
 end

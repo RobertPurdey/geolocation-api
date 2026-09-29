@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :geolocations,
-    only: [:create, :show],
+    only: [:create, :show, :destroy],
     param: :target,
     # allowing dots to be part of the param
     constraints: { target: /[^\/]+/ }
