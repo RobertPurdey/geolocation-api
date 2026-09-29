@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateGeolocations < ActiveRecord::Migration[8.1]
   def change
     create_table :geolocations do |t|

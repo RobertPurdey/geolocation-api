@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Geolocations API', type: :request do
@@ -7,7 +9,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
       expect(response).to have_http_status(:bad_request)
 
-      json = JSON.parse(response.body)
+      json = response.parsed_body
       expect(json['error']).to eq('Target must be a valid IP address or URL')
     end
   end
@@ -40,7 +42,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
         expect(response).to have_http_status(:created)
 
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json).to include(geolocation)
       end
     end
@@ -67,7 +69,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
         expect(response).to have_http_status(:created)
 
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json).to include(geolocation)
       end
     end
@@ -98,7 +100,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
         expect(response).to have_http_status(:conflict)
 
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json['error']).to eq(
           'Geolocation with the ip: 208.80.152.2 already exists'
         )
@@ -151,7 +153,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
           expect(response).to have_http_status(:ok)
 
-          json = JSON.parse(response.body)
+          json = response.parsed_body
           expect(json).to include(geolocation)
         end
       end
@@ -166,7 +168,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
           expect(response).to have_http_status(:ok)
 
-          json = JSON.parse(response.body)
+          json = response.parsed_body
           expect(json).to include(geolocation)
         end
       end
@@ -178,7 +180,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
         expect(response).to have_http_status(:not_found)
 
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json['error']).to eq(
           'Geolocation with the ip: 208.80.152.2 was not found'
         )
@@ -230,7 +232,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
         expect(response).to have_http_status(:not_found)
 
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json['error']).to eq(
           'Geolocation with the ip: 208.80.152.2 was not found'
         )

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GeolocationServices
   class Finder
     def initialize(provider)
