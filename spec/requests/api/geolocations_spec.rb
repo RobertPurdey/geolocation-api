@@ -3,13 +3,30 @@ require 'rails_helper'
 RSpec.describe "Geolocations API", type: :request do
   describe "Create a geolocation" do
     context "when the target is provided" do
+      let(:geolocation) do
+        {
+          "ip" => "208.80.152.2",
+          "country" => "Canada",
+          "region" => "British Columbia",
+          "city" => "Vancouver",
+          "latitude" => 49.28,
+          "longitude" => -123.12 }
+      end 
+      
+      let(:finder) { instance_double(GeolocationServices::Finder) }
+        
+      before do
+        allow(GeolocationServices::Finder).to receive(:new).and_return(finder)
+        allow(finder).to receive(:call).with("208.80.152.2").and_return(geolocation)
+      end
+
       it "creates a geolocation based on the target" do
         post api_geolocations_path, params: { target: "208.80.152.2"}
         
         expect(response).to have_http_status(:ok)
 
         json = JSON.parse(response.body)
-        expect(json["message"]).to eq("Geolocation created based on the target: 208.80.152.2")
+        expect(json).to eq(geolocation)
       end
     end
 
