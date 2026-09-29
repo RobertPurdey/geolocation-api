@@ -1,0 +1,123 @@
+{
+  "info": {
+    "_postman_id": "5ede53c8-3900-4cc2-bebd-6a33118ed412",
+    "name": "Geolocation API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "10828672"
+  },
+  "item": [
+    {
+      "name": "Geolocation",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "7f3c9a1e8b42d6f0c5a9e7b2",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/geolocations?target=microsoft.com",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "geolocations"
+              ],
+              "query": [
+                {
+                  "key": "target",
+                  "value": "microsoft.com"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "7f3c9a1e8b42d6f0c5a9e7b2",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/geolocations?target=2606:4700:4700::1111",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "geolocations"
+              ],
+              "query": [
+                {
+                  "key": "target",
+                  "value": "2606:4700:4700::1111"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Destroy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "7f3c9a1e8b42d6f0c5a9e7b2",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/geolocations?target=2606:4700:4700::1111",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "geolocations"
+              ],
+              "query": [
+                {
+                  "key": "target",
+                  "value": "2606:4700:4700::1111"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
