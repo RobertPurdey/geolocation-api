@@ -57,6 +57,27 @@ Run the RSpec suite through Docker:
 docker compose exec api bundle exec rspec
 ```
 
+## 🧪 Testing
+
+Run the test suite through Docker:
+
+```bash
+docker compose exec api bundle exec rspec
+```
+
+Alternatively, to run the tests locally, create a `.env.test` file in the project root:
+
+```env
+API_KEY=your-api-key
+```
+
+Then run:
+
+```bash
+bundle exec rspec
+```
+
+
 ---
 
 
