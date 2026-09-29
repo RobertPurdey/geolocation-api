@@ -2,9 +2,10 @@ module Api
   class GeolocationsController < ApplicationController
     def create
       target = geolocation_params
-      geolocation = ::GeolocationServices::Finder.new(::GeolocationServices::Providers::IpstackProvider.new).call(target)
+      geo_data = ::GeolocationServices::Finder.new(::GeolocationServices::Providers::IpstackProvider.new).call(target)
+      geolocation = ::Geolocation.create!(geo_data)
 
-      render json: geolocation
+      render json: geolocation, status: :created
     end
 
     private

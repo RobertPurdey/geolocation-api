@@ -23,10 +23,10 @@ RSpec.describe "Geolocations API", type: :request do
       it "creates a geolocation based on the target" do
         post api_geolocations_path, params: { target: "208.80.152.2"}
         
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:created)
 
         json = JSON.parse(response.body)
-        expect(json).to eq(geolocation)
+        expect(json).to include(geolocation)
       end
     end
 
