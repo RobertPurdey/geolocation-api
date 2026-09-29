@@ -108,6 +108,33 @@ RSpec.describe 'Geolocations API', type: :request do
       end
     end
 
+    context 'when the target is a host' do
+      let(:geolocation) do
+        {
+          'ip' => '142.250.72.196',
+          'country' => 'United States',
+          'region' => 'California',
+          'city' => 'Mountain View',
+          'latitude' => 37.4056,
+          'longitude' => -122.0775
+        }
+      end
+
+      before do
+        allow(Resolv).to receive(:getaddress).with('google.com').and_return('142.250.72.196')
+        allow(finder).to receive(:call).with('142.250.72.196').and_return(geolocation)
+      end
+
+      it 'creates a geolocation based on the URL' do
+        post api_geolocations_path, params: { target: 'google.com' }, headers: auth_headers
+
+        expect(response).to have_http_status(:created)
+
+        json = response.parsed_body
+        expect(json).to include(geolocation)
+      end
+    end
+
     context 'when the target is omitted' do
       it 'returns a bad request error' do
         post api_geolocations_path, headers: auth_headers

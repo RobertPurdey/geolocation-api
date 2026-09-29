@@ -42,13 +42,12 @@ module Api
       return target if valid_ip?(target)
 
       uri = URI.parse(target)
-      raise InvalidTargetError, INVALID_TARGET_MESSAGE unless uri.host
-
-      Resolv.getaddress(uri.host)
-    rescue URI::InvalidURIError
+      host = uri.host || target
+      Resolv.getaddress(host)
+    rescue URI::InvalidURIError, Resolv::ResolvError
       raise InvalidTargetError, INVALID_TARGET_MESSAGE
     end
-
+ 
     def valid_ip?(target)
       IPAddr.new(target)
       true
