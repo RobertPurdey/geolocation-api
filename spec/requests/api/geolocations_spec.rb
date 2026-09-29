@@ -16,7 +16,8 @@ RSpec.describe "Geolocations API", type: :request do
           "region" => "British Columbia",
           "city" => "Vancouver",
           "latitude" => 49.28,
-          "longitude" => -123.12 }
+          "longitude" => -123.12
+        }
       end 
 
       before do
@@ -69,6 +70,50 @@ RSpec.describe "Geolocations API", type: :request do
         post api_geolocations_path, params: { target: "208.80.152.2" }
     
         expect(finder).not_to have_received(:call)
+      end
+    end
+  end
+
+  describe "Show a geolocation" do
+    context "when the geolocation exists" do
+      let!(:geolocation) do
+        Geolocation.create!(
+          ip: "208.80.152.2",
+          country: "Canada",
+          region: "British Columbia",
+          city: "Vancouver",
+          latitude: 49.28,
+          longitude: -123.12
+        )
+      end
+
+      it "returns the geolocation" do
+        get api_geolocation_path("208.80.152.2")
+
+        expect(response).to have_http_status(:ok)
+
+        json = JSON.parse(response.body)
+        expect(json).to include(
+          "ip" => "208.80.152.2",
+          "country" => "Canada",
+          "region" => "British Columbia",
+          "city" => "Vancouver",
+          "latitude" => 49.28,
+          "longitude" => -123.12
+        )
+      end
+    end
+
+    context "when the geolocation is missing" do
+      it "returns not found" do
+        get api_geolocation_path("208.80.152.2")
+
+        expect(response).to have_http_status(:not_found)
+
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq(
+          "Geolocation with the ip: 208.80.152.2 was not found"
+        )
       end
     end
   end
