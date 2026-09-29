@@ -60,9 +60,9 @@ geolocation_seed_data = [
     longitude: -122.41832733154297
   },
 
-  # Microsoft — microsoft.com → 150.171.110.152
+  # Microsoft — microsoft.com → 150.171.110.145
   {
-    ip: '150.171.110.152',
+    ip: '150.171.110.145',
     country: 'United States',
     region: 'New York',
     city: 'New York',
