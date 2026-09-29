@@ -15,7 +15,7 @@ module GeolocationServices
       def call(target)
         response = request(target)
 
-        raise IpStackProviderError, "IPstack request failed with with #{response.code}" unless response.code.to_i == 200
+        raise IpStackProviderError, "IPstack request failed with #{response.code}" unless response.code.to_i == 200
 
         data = JSON.parse(response.body)
 
