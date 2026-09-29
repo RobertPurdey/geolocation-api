@@ -1,6 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe "Geolocations API", type: :request do
+  shared_examples "an invalid target" do
+    it "returns a bad request" do
+      request
+  
+      expect(response).to have_http_status(:bad_request)
+
+      json = JSON.parse(response.body)
+      expect(json["error"]).to eq("Target must be a valid IP address or URL")
+    end
+  end
+
   describe "Create a geolocation" do
     let(:finder) { instance_double(GeolocationServices::Finder) }
 
@@ -29,6 +40,33 @@ RSpec.describe "Geolocations API", type: :request do
   
         expect(response).to have_http_status(:created)
 
+        json = JSON.parse(response.body)
+        expect(json).to include(geolocation)
+      end
+    end
+
+    context "when the target is a URL" do
+      let(:geolocation) do
+        {
+          "ip" => "142.250.72.196",
+          "country" => "United States",
+          "region" => "California",
+          "city" => "Mountain View",
+          "latitude" => 37.4056,
+          "longitude" => -122.0775
+        }
+      end
+    
+      before do
+        allow(Resolv).to receive(:getaddress).with("www.google.com").and_return("142.250.72.196")
+        allow(finder).to receive(:call).with("142.250.72.196").and_return(geolocation)
+      end
+    
+      it "creates a geolocation based on the URL" do
+        post api_geolocations_path, params: { target: "https://www.google.com" }
+    
+        expect(response).to have_http_status(:created)
+    
         json = JSON.parse(response.body)
         expect(json).to include(geolocation)
       end
@@ -72,35 +110,65 @@ RSpec.describe "Geolocations API", type: :request do
         expect(finder).not_to have_received(:call)
       end
     end
+
+    context "when the target is an invalid IP address" do
+      let(:request) do
+        post api_geolocations_path, params: { target: "208.80.152.999" }
+      end
+  
+      include_examples "an invalid target"
+    end
+  
+    context "when the target is an invalid URL" do
+      let(:request) do
+        post api_geolocations_path, params: { target: "https://[" }
+      end
+  
+      include_examples "an invalid target"
+    end
   end
 
   describe "Show a geolocation" do
     context "when the geolocation exists" do
-      let!(:geolocation) do
-        Geolocation.create!(
-          ip: "208.80.152.2",
-          country: "Canada",
-          region: "British Columbia",
-          city: "Vancouver",
-          latitude: 49.28,
-          longitude: -123.12
-        )
-      end
-
-      it "returns the geolocation" do
-        get api_geolocations_path, params: { target: "208.80.152.2"}
-
-        expect(response).to have_http_status(:ok)
-
-        json = JSON.parse(response.body)
-        expect(json).to include(
+      let(:geolocation) do
+        {
           "ip" => "208.80.152.2",
           "country" => "Canada",
           "region" => "British Columbia",
           "city" => "Vancouver",
           "latitude" => 49.28,
           "longitude" => -123.12
-        )
+        }
+      end
+  
+      let!(:geolocation_record) do
+        Geolocation.create!(geolocation)
+      end
+
+      context "when the target is an IP address" do
+        it "returns the geolocation" do
+          get api_geolocations_path, params: { target: "208.80.152.2" }
+  
+          expect(response).to have_http_status(:ok)
+  
+          json = JSON.parse(response.body)
+          expect(json).to include(geolocation)
+        end
+      end
+  
+      context "when the target is a URL" do
+        before do
+          allow(Resolv).to receive(:getaddress).with("www.google.com").and_return("208.80.152.2")
+        end
+  
+        it "returns the geolocation" do
+          get api_geolocations_path, params: { target: "https://www.google.com" }
+  
+          expect(response).to have_http_status(:ok)
+  
+          json = JSON.parse(response.body)
+          expect(json).to include(geolocation)
+        end
       end
     end
 
@@ -115,6 +183,22 @@ RSpec.describe "Geolocations API", type: :request do
           "Geolocation with the ip: 208.80.152.2 was not found"
         )
       end
+    end
+
+    context "when the target is an invalid IP address" do
+      let(:request) do
+        get api_geolocations_path, params: { target: "208.80.152.999" }
+      end
+  
+      include_examples "an invalid target"
+    end
+  
+    context "when the target is an invalid URL" do
+      let(:request) do
+        get api_geolocations_path, params: { target: "https://[" }
+      end
+  
+      include_examples "an invalid target"
     end
   end
 
@@ -151,6 +235,22 @@ RSpec.describe "Geolocations API", type: :request do
           "Geolocation with the ip: 208.80.152.2 was not found"
         )
       end
+    end
+
+    context "when the target is an invalid IP address" do
+      let(:request) do
+        delete api_geolocations_path, params: { target: "208.80.152.999" }
+      end
+  
+      include_examples "an invalid target"
+    end
+  
+    context "when the target is an invalid URL" do
+      let(:request) do
+        delete api_geolocations_path, params: { target: "https://[" }
+      end
+  
+      include_examples "an invalid target"
     end
   end
 end

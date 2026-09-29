@@ -1,0 +1,2 @@
+class InvalidTargetError < StandardError
+end
