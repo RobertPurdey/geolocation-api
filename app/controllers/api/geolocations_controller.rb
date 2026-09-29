@@ -47,7 +47,7 @@ module Api
     rescue URI::InvalidURIError, Resolv::ResolvError
       raise InvalidTargetError, INVALID_TARGET_MESSAGE
     end
- 
+
     def valid_ip?(target)
       IPAddr.new(target)
       true
