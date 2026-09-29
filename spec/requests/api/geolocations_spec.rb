@@ -3,6 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Geolocations API', type: :request do
+  def auth_headers
+    { 'Authorization' => "Bearer #{ENV.fetch('API_KEY')}" }
+  end
+
   shared_examples 'an invalid target' do
     it 'returns a bad request' do
       request
@@ -11,6 +15,36 @@ RSpec.describe 'Geolocations API', type: :request do
 
       json = response.parsed_body
       expect(json['error']).to eq('Target must be a valid IP address or URL')
+    end
+  end
+
+  describe 'Authentication' do
+    let(:invalid_headers) do
+      { 'Authorization' => 'Bearer invalid-key' }
+    end
+
+    it 'rejects create requests with an invalid API key' do
+      post api_geolocations_path,
+           params: { target: '208.80.152.2' },
+           headers: invalid_headers
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'rejects show requests with an invalid API key' do
+      get api_geolocations_path,
+          params: { target: '208.80.152.2' },
+          headers: invalid_headers
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'rejects destroy requests with an invalid API key' do
+      delete api_geolocations_path,
+             params: { target: '208.80.152.2' },
+             headers: invalid_headers
+
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 
@@ -38,7 +72,7 @@ RSpec.describe 'Geolocations API', type: :request do
       end
 
       it 'creates a geolocation based on the target' do
-        post api_geolocations_path, params: { target: '208.80.152.2' }
+        post api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
 
         expect(response).to have_http_status(:created)
 
@@ -65,7 +99,7 @@ RSpec.describe 'Geolocations API', type: :request do
       end
 
       it 'creates a geolocation based on the URL' do
-        post api_geolocations_path, params: { target: 'https://www.google.com' }
+        post api_geolocations_path, params: { target: 'https://www.google.com' }, headers: auth_headers
 
         expect(response).to have_http_status(:created)
 
@@ -76,7 +110,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the target is omitted' do
       it 'returns a bad request error' do
-        post api_geolocations_path
+        post api_geolocations_path, headers: auth_headers
 
         expect(response).to have_http_status(:bad_request)
       end
@@ -96,7 +130,7 @@ RSpec.describe 'Geolocations API', type: :request do
       end
 
       it 'returns a conflict error' do
-        post api_geolocations_path, params: { target: '208.80.152.2' }
+        post api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
 
         expect(response).to have_http_status(:conflict)
 
@@ -107,7 +141,7 @@ RSpec.describe 'Geolocations API', type: :request do
       end
 
       it 'ignores calling the finder' do
-        post api_geolocations_path, params: { target: '208.80.152.2' }
+        post api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
 
         expect(finder).not_to have_received(:call)
       end
@@ -115,7 +149,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the target is an invalid IP address' do
       let(:request) do
-        post api_geolocations_path, params: { target: '208.80.152.999' }
+        post api_geolocations_path, params: { target: '208.80.152.999' }, headers: auth_headers
       end
 
       include_examples 'an invalid target'
@@ -123,7 +157,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the target is an invalid URL' do
       let(:request) do
-        post api_geolocations_path, params: { target: 'https://[' }
+        post api_geolocations_path, params: { target: 'https://[' }, headers: auth_headers
       end
 
       include_examples 'an invalid target'
@@ -149,7 +183,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
       context 'when the target is an IP address' do
         it 'returns the geolocation' do
-          get api_geolocations_path, params: { target: '208.80.152.2' }
+          get api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
 
           expect(response).to have_http_status(:ok)
 
@@ -164,7 +198,7 @@ RSpec.describe 'Geolocations API', type: :request do
         end
 
         it 'returns the geolocation' do
-          get api_geolocations_path, params: { target: 'https://www.google.com' }
+          get api_geolocations_path, params: { target: 'https://www.google.com' }, headers: auth_headers
 
           expect(response).to have_http_status(:ok)
 
@@ -176,7 +210,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the geolocation is missing' do
       it 'returns not found' do
-        get api_geolocations_path, params: { target: '208.80.152.2' }
+        get api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
 
         expect(response).to have_http_status(:not_found)
 
@@ -189,7 +223,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the target is an invalid IP address' do
       let(:request) do
-        get api_geolocations_path, params: { target: '208.80.152.999' }
+        get api_geolocations_path, params: { target: '208.80.152.999' }, headers: auth_headers
       end
 
       include_examples 'an invalid target'
@@ -197,7 +231,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the target is an invalid URL' do
       let(:request) do
-        get api_geolocations_path, params: { target: 'https://[' }
+        get api_geolocations_path, params: { target: 'https://[' }, headers: auth_headers
       end
 
       include_examples 'an invalid target'
@@ -218,17 +252,17 @@ RSpec.describe 'Geolocations API', type: :request do
       end
 
       it 'destroys the geolocation' do
-        delete api_geolocations_path, params: { target: '208.80.152.2' }
+        delete api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
         expect(response).to have_http_status(:no_content)
 
-        delete api_geolocations_path, params: { target: '208.80.152.2' }
+        delete api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
         expect(response).to have_http_status(:not_found)
       end
     end
 
     context 'when the geolocation is missing' do
       it 'returns not found' do
-        delete api_geolocations_path, params: { target: '208.80.152.2' }
+        delete api_geolocations_path, params: { target: '208.80.152.2' }, headers: auth_headers
 
         expect(response).to have_http_status(:not_found)
 
@@ -241,7 +275,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the target is an invalid IP address' do
       let(:request) do
-        delete api_geolocations_path, params: { target: '208.80.152.999' }
+        delete api_geolocations_path, params: { target: '208.80.152.999' }, headers: auth_headers
       end
 
       include_examples 'an invalid target'
@@ -249,7 +283,7 @@ RSpec.describe 'Geolocations API', type: :request do
 
     context 'when the target is an invalid URL' do
       let(:request) do
-        delete api_geolocations_path, params: { target: 'https://[' }
+        delete api_geolocations_path, params: { target: 'https://[' }, headers: auth_headers
       end
 
       include_examples 'an invalid target'

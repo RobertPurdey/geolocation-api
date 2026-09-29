@@ -10,6 +10,7 @@ module Api
 
     rescue_from InvalidTargetError, with: :handle_invalid_target
 
+    before_action :authenticate
     before_action :ensure_unique_geolocation, only: :create
     before_action :set_geolocation, only: %i[show destroy]
 
