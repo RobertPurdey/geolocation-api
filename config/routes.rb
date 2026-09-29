@@ -9,10 +9,8 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   namespace :api do
-    resources :geolocations,
-    only: [:create, :show, :destroy],
-    param: :target,
-    # allowing dots to be part of the param
-    constraints: { target: /[^\/]+/ }
+    post "geolocations", to: "geolocations#create"
+    get "geolocations", to: "geolocations#show"
+    delete "geolocations", to: "geolocations#destroy"
   end
 end

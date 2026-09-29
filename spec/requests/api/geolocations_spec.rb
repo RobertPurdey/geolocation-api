@@ -88,7 +88,7 @@ RSpec.describe "Geolocations API", type: :request do
       end
 
       it "returns the geolocation" do
-        get api_geolocation_path("208.80.152.2")
+        get api_geolocations_path, params: { target: "208.80.152.2"}
 
         expect(response).to have_http_status(:ok)
 
@@ -106,7 +106,7 @@ RSpec.describe "Geolocations API", type: :request do
 
     context "when the geolocation is missing" do
       it "returns not found" do
-        get api_geolocation_path("208.80.152.2")
+        get api_geolocations_path, params: { target: "208.80.152.2"}
 
         expect(response).to have_http_status(:not_found)
 
@@ -132,17 +132,17 @@ RSpec.describe "Geolocations API", type: :request do
       end
 
       it "destroys the geolocation" do
-        delete api_geolocation_path("208.80.152.2")
+        delete api_geolocations_path, params: { target: "208.80.152.2"}
         expect(response).to have_http_status(:no_content)
 
-        delete api_geolocation_path("208.80.152.2")
+        delete api_geolocations_path, params: { target: "208.80.152.2"}
         expect(response).to have_http_status(:not_found)
       end
     end
 
     context "when the geolocation is missing" do
       it "returns not found" do
-        delete api_geolocation_path("208.80.152.2")
+        delete api_geolocations_path, params: { target: "208.80.152.2"}
 
         expect(response).to have_http_status(:not_found)
 
