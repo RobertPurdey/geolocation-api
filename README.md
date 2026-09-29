@@ -51,14 +51,6 @@ http://localhost:3000
 
 ## 🧪 Testing
 
-Run the RSpec suite through Docker:
-
-```bash
-docker compose exec api bundle exec rspec
-```
-
-## 🧪 Testing
-
 Run the test suite through Docker:
 
 ```bash
