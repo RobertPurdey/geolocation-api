@@ -14,3 +14,6 @@ plugins:
 AllCops:
   TargetRubyVersion: 3.4
   NewCops: enable
+
+Style/Documentation:
+  Enabled: false
