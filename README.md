@@ -48,7 +48,6 @@ http://localhost:3000
 
 ---
 
-
 ## 🖥️ Local Development
 
 The application is configured to run through Docker for a quick setup. To run Rails directly on the host instead, create a `.env` file with the required local configuration:
@@ -61,9 +60,7 @@ IPSTACK_ACCESS_KEY=your-ipstack-access-key
 API_KEY=your-api-key
 ```
 
-
 ---
-
 
 ## 🧪 Testing
 
@@ -85,9 +82,7 @@ Then run:
 bundle exec rspec
 ```
 
-
 ---
-
 
 ## 📬 Postman
 
@@ -101,8 +96,7 @@ Import the collection into Postman and use it to exercise the API endpoints.
 
 ---
 
-
-## API
+## 🧭 API
 
 All endpoints require Bearer authentication.
 
@@ -121,13 +115,11 @@ POST /api/geolocations?target=8.8.8.8
 - Full URL, e.g. `https://example.com`
 - Hostname, e.g. `example.com`
 
-
 ### Get a geolocation
 
 ```http
 GET /api/geolocations?target=8.8.8.8
 ```
-
 
 ### Delete a geolocation
 
@@ -136,7 +128,6 @@ DELETE /api/geolocations?target=8.8.8.8
 ```
 
 ---
-
 
 ## 🏗️ Design
 
@@ -170,7 +161,6 @@ RSpec request specs cover the API behavior, including successful requests and er
 
 ---
 
-
-## Seed Data
+## 🌱 Seed Data
 
 The application includes example IPv4, IPv6, and URL-based geolocations. Seeds are idempotent: existing records are not overwritten, while missing examples are created automatically on startup.
