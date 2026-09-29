@@ -4,7 +4,7 @@ A Ruby on Rails REST API that resolves an IP address, URL, or hostname to geoloc
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start - Docker
 
 ### Requirements
 
@@ -20,10 +20,10 @@ IPSTACK_ACCESS_KEY=your-ipstack-access-key
 ```
 
 - The remaining Docker configuration is provided in `docker-compose.yml`.
-- The API_KEY environment variable should be provided as a Bearer token
+- The API_KEY environment variable for docker deployment is `7f3c9a1e8b42d6f0c5a9e7b2` and should be used as your bearer token.
 
 ```text
-Authorization: Bearer your-api-key
+Authorization: Bearer 7f3c9a1e8b42d6f0c5a9e7b2
 ```
 
 ### 2. Start the application
