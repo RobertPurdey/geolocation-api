@@ -15,7 +15,7 @@ A Ruby on Rails REST API that resolves an IP address, URL, or hostname to geoloc
 
 Create a `.env` file in the project root containing your IPstack access key:
 
-```env id="o8tut9"
+```env
 IPSTACK_ACCESS_KEY=your-ipstack-access-key
 ```
 
