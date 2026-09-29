@@ -49,6 +49,22 @@ http://localhost:3000
 ---
 
 
+## 🖥️ Local Development
+
+The application is configured to run through Docker for a quick setup. To run Rails directly on the host instead, create a `.env` file with the required local configuration:
+
+```env
+DATABASE_USERNAME=your-db-name
+DATABASE_PASSWORD=your-db-password
+DATABASE_HOST=localhost
+IPSTACK_ACCESS_KEY=your-ipstack-access-key
+API_KEY=your-api-key
+```
+
+
+---
+
+
 ## 🧪 Testing
 
 Run the test suite through Docker:
